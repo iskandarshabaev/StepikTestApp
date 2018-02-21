@@ -10,6 +10,6 @@ interface StepikApiController {
 
     @GET("search-results")
     @Unwrap("search-results", ResponseType.ARRAY)
-    fun searchCourses(@Query("query") query: String): Observable<PageResponse<List<Course>>>
+    fun searchCourses(@Query("query") query: String): Observable<PageResponse<MutableList<Course>>>
 
 }

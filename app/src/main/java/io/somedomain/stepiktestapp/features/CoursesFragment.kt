@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.view.MenuItemCompat
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
 import android.view.*
 import io.somedomain.stepiktestapp.R
@@ -31,8 +33,8 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
     companion object {
 
         const val typeKey = "type"
-        const val typeFavourites = 1
-        const val typeSearch = 2
+        public const val typeFavourites = 1
+        public const val typeSearch = 2
 
         public fun favourites(): CoursesFragment {
             return CoursesFragment(Bundle().also {
@@ -58,7 +60,7 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
     private var needToClearAdapter = true
 
     override fun onCreatePresenter(savedInstanceState: Bundle?): CoursesPresenter {
-        return CoursesPresenter(repositoryProvider.coursesRepository)
+        return CoursesPresenter(type, repositoryProvider.coursesRepository)
     }
 
     override fun onCreateListAdapter(): ListAdapter<Course> {
@@ -77,6 +79,12 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
         setHasOptionsMenu(true)
     }
 
+    override fun initViews() {
+        super.initViews()
+        val dividerItemDecoration = DividerItemDecoration(recyclerView.context, LinearLayoutManager.VERTICAL)
+        recyclerView.addItemDecoration(dividerItemDecoration)
+    }
+
     override fun onStart() {
         super.onStart()
         if (type == 1 && isFirstRun) {
@@ -85,7 +93,7 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
         }
     }
 
-    override fun showContent(data: PageResponse<List<Course>>) {
+    override fun showContent(data: PageResponse<MutableList<Course>>) {
         if (type == typeFavourites && !needToClearAdapter) {
             adapter.update(data)
             showEmptyView(adapter.itemCount > 0)

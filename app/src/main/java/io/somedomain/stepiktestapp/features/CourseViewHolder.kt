@@ -21,11 +21,10 @@ class CourseViewHolder(
     private val titleView = view.findViewById<TextView>(R.id.title)
     private val favouriteView = view.findViewById<ImageView>(R.id.favourite)
     private val scoreView = view.findViewById<TextView>(R.id.score)
-    private var data: Course? = null
 
     init {
         favouriteView.setOnClickListener {
-            data?.let {
+            (favouriteView.tag as? Course)?.let {
                 it.isFavourite = !it.isFavourite
                 if (it.isFavourite) {
                     callbacks?.onAddCourseToFavourites(it)
@@ -45,7 +44,7 @@ class CourseViewHolder(
         } else {
             favouriteView.setImageDrawable(favouritePassiveDrawable)
         }
-        this.data = data
+        favouriteView.tag = data
     }
 
     interface CourseItemCallbacks {

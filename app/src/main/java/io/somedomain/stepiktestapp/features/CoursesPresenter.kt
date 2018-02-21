@@ -1,30 +1,50 @@
 package io.somedomain.stepiktestapp.features
 
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.somedomain.stepiktestapp.base.BaseListView
 import io.somedomain.stepiktestapp.base.CacheableListPresenter
 import io.somedomain.stepiktestapp.common.applySchedulers
+import io.somedomain.stepiktestapp.features.CoursesFragment.Companion.typeFavourites
 import io.somedomain.stepiktestapp.model.Course
 import io.somedomain.stepiktestapp.model.PageResponse
 import io.somedomain.stepiktestapp.repository.CoursesRepository
 
 class CoursesPresenter(
+        private var type: Int,
         private var coursersRepository: CoursesRepository
 ) : CacheableListPresenter<Course, CoursesPresenter.View>() {
 
+    private var disposable: Disposable? = null
+
     init {
-        coursersRepository.subscribeToCourseChanges()
+        disposable = coursersRepository.subscribeToCourseChanges()
                 .applySchedulers()
                 .subscribe({
                     view()?.onItemChanged(it)
+                    updateCacheSubject(it)
                 }, this::onError)
     }
 
+    fun updateCacheSubject(course: Course) {
+        if (cacheSubject.value == null) {
+            return
+        }
+        val list = cacheSubject.value.data
+        if (type == typeFavourites) {
+            if (course.isFavourite) {
+                list.add(course)
+            } else {
+                list.removeAll { it.course == course.course }
+            }
+        }
+    }
+
     fun reloadFavourites() {
-        coursersRepository.loadFavourites()
+        /*coursersRepository.loadFavourites()
                 .applySchedulers()
-                .deliverToSubject()
+                .deliverToSubject()*/
     }
 
     fun loadFavourites() {
@@ -41,12 +61,12 @@ class CoursesPresenter(
                 .subscribe({ onData(it) }, { onError(it) })
     }
 
-    open protected fun Observable<PageResponse<List<Course>>>.mergeWithFavourites(): Observable<PageResponse<List<Course>>> =
+    open protected fun Observable<PageResponse<MutableList<Course>>>.mergeWithFavourites(): Observable<PageResponse<MutableList<Course>>> =
             flatMap { result ->
                 Observable.zip(Observable.just(result),
                         coursersRepository.loadFavourites(),
-                        BiFunction { t1: PageResponse<List<Course>>, t2: PageResponse<List<Course>> ->
-                            val list = t1.data.toMutableList()
+                        BiFunction { t1: PageResponse<MutableList<Course>>, t2: PageResponse<MutableList<Course>> ->
+                            val list = t1.data
                             for (favouriteItem in t2.data) {
                                 for (i in 0 until list.size) {
                                     if (list[i].course == favouriteItem.course) {
@@ -54,7 +74,7 @@ class CoursesPresenter(
                                     }
                                 }
                             }
-                            PageResponse<List<Course>>(result.meta, list)
+                            PageResponse(result.meta, list)
                         })
             }
 
@@ -72,5 +92,11 @@ class CoursesPresenter(
 
     interface View : BaseListView<Course> {
         fun onItemChanged(course: Course)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposable?.dispose()
+
     }
 }

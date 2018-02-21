@@ -26,7 +26,7 @@ abstract class ListAdapter<T>(
         return data
     }
 
-    fun update(data: PageResponse<List<T>>) {
+    fun update(data: PageResponse<MutableList<T>>) {
         val lastItem = this.data.size - 1
         this.data.addAll(data.data)
         if (lastItem > 0) {

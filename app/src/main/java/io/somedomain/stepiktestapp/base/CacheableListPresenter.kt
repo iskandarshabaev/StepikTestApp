@@ -8,7 +8,7 @@ import io.somedomain.stepiktestapp.model.PageResponse
 
 open class CacheableListPresenter<T, V : BaseListView<T>> : BaseListPresenter<T, V>() {
 
-    open protected var cacheSubject: BehaviorSubject<PageResponse<List<T>>> = BehaviorSubject.create()
+    open protected var cacheSubject: BehaviorSubject<PageResponse<MutableList<T>>> = BehaviorSubject.create()
 
     override fun attachView(v: V) {
         super.attachView(v)
@@ -20,18 +20,18 @@ open class CacheableListPresenter<T, V : BaseListView<T>> : BaseListPresenter<T,
                 .subscribe(this::onData, this::onError)
     }
 
-    open protected fun Observable<PageResponse<List<T>>>.mergeWithCache(): Observable<PageResponse<List<T>>> =
+    open protected fun Observable<PageResponse<MutableList<T>>>.mergeWithCache(): Observable<PageResponse<MutableList<T>>> =
             flatMap { result ->
                 if (cacheSubject.value != null) {
                     val page = cacheSubject.value
-                    val data = page.data.toMutableList()
+                    val data = page.data
                     data.addAll(result.data)
-                    Observable.just(PageResponse<List<T>>(result.meta, data))
+                    Observable.just(PageResponse(result.meta, data))
                 } else {
                     Observable.just(result)
                 }
             }
 
-    open protected fun Observable<PageResponse<List<T>>>.deliverToSubject(): Disposable =
+    open protected fun Observable<PageResponse<MutableList<T>>>.deliverToSubject(): Disposable =
             subscribe({ cacheSubject.onNext(it) }, { cacheSubject.onError(it) })
 }

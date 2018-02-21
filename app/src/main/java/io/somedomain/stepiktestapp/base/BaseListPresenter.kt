@@ -4,7 +4,7 @@ import io.somedomain.stepiktestapp.model.PageResponse
 
 abstract class BaseListPresenter<T, V : BaseListView<T>> : BaseDefaultPresenter<V>() {
 
-    fun onData(data: PageResponse<List<T>>) {
+    fun onData(data: PageResponse<MutableList<T>>) {
         view()?.showContent(data)
     }
 
