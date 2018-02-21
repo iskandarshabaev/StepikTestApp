@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">StepikTestApp</string>
+    <string name="score">%.2f</string>
 </resources>

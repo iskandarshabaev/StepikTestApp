@@ -20,14 +20,14 @@ class CourseViewHolder(
     private val imageView = view.findViewById<ImageView>(R.id.image)
     private val titleView = view.findViewById<TextView>(R.id.title)
     private val favouriteView = view.findViewById<ImageView>(R.id.favourite)
-    private val scoreiew = view.findViewById<TextView>(R.id.score)
+    private val scoreView = view.findViewById<TextView>(R.id.score)
     private var data: Course? = null
 
     init {
         favouriteView.setOnClickListener {
             data?.let {
                 it.isFavourite = !it.isFavourite
-                if(it.isFavourite) {
+                if (it.isFavourite) {
                     callbacks?.onAddCourseToFavourites(it)
                 } else {
                     callbacks?.onRemoveCourseFromFavourites(it)
@@ -39,6 +39,7 @@ class CourseViewHolder(
     override fun bind(position: Int, data: Course) {
         ImageHelper.picasso.load(data.courseCover).into(imageView)
         titleView.text = data.courseTitle
+        scoreView.text = view.resources.getString(R.string.score, data.score)
         if (data.isFavourite) {
             favouriteView.setImageDrawable(favouriteActiveDrawable)
         } else {

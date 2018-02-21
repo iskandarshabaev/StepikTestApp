@@ -55,6 +55,8 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
     override val title: String
         get() = ""
 
+    private var needToClearAdapter = true
+
     override fun onCreatePresenter(savedInstanceState: Bundle?): CoursesPresenter {
         return CoursesPresenter(repositoryProvider.coursesRepository)
     }
@@ -78,15 +80,17 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
     override fun onStart() {
         super.onStart()
         if (type == 1 && isFirstRun) {
+            isFirstRun = false
             presenter.loadFavourites()
         }
     }
 
     override fun showContent(data: PageResponse<List<Course>>) {
-        if (type == typeFavourites) {
+        if (type == typeFavourites && !needToClearAdapter) {
             adapter.update(data)
             showEmptyView(adapter.itemCount > 0)
         } else {
+            needToClearAdapter = false
             adapter.clear()
             adapter.update(data)
         }
@@ -106,9 +110,17 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item?.itemId == R.id.action_search) {
-            startActivity(Intent(activity, CoursesSearchActivity::class.java))
+            startActivityForResult(Intent(activity, CoursesSearchActivity::class.java), 89)
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 89) {
+            needToClearAdapter = true
+            presenter.reloadFavourites()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -135,7 +147,7 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
     }
 
     override fun onItemChanged(course: Course) {
-        val foundCourse = adapter.getDataList().firstOrNull { it.id == course.id }
+        val foundCourse = adapter.getDataList().firstOrNull { it.course == course.course }
         if (type == typeFavourites) {
             if (foundCourse != null) {
                 foundCourse.isFavourite = course.isFavourite
