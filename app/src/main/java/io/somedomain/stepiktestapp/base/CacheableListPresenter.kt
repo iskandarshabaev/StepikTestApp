@@ -15,7 +15,7 @@ open class CacheableListPresenter<T, V : BaseListView<T>> : BaseListPresenter<T,
         subscribeToSubject()
     }
 
-    open protected fun  subscribeToSubject() {
+    open protected fun subscribeToSubject() {
         cacheSubject.applySchedulers()
                 .subscribe(this::onData, this::onError)
     }
@@ -33,5 +33,5 @@ open class CacheableListPresenter<T, V : BaseListView<T>> : BaseListPresenter<T,
             }
 
     open protected fun Observable<PageResponse<MutableList<T>>>.deliverToSubject(): Disposable =
-            subscribe({ cacheSubject.onNext(it) }, { cacheSubject.onError(it) })
+            subscribe({ cacheSubject.onNext(it) }, { view()?.showError(it) })
 }

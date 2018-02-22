@@ -12,6 +12,7 @@ import io.somedomain.stepiktestapp.R
 import io.somedomain.stepiktestapp.base.ListAdapter
 import io.somedomain.stepiktestapp.base.ListFragment
 import io.somedomain.stepiktestapp.base.ViewHolder
+import io.somedomain.stepiktestapp.common.redSnackbar
 import io.somedomain.stepiktestapp.common.repositoryProvider
 import io.somedomain.stepiktestapp.features.search.CoursesSearchActivity
 import io.somedomain.stepiktestapp.model.Course
@@ -33,6 +34,7 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
     companion object {
 
         const val typeKey = "type"
+        const val queryKey = "query"
         public const val typeFavourites = 1
         public const val typeSearch = 2
 
@@ -57,7 +59,7 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
     override val title: String
         get() = ""
 
-    private var needToClearAdapter = true
+    protected var currentQuerry = ""
 
     override fun onCreatePresenter(savedInstanceState: Bundle?): CoursesPresenter {
         return CoursesPresenter(type, repositoryProvider.coursesRepository)
@@ -77,12 +79,20 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        savedInstanceState?.getString(queryKey)?.let {
+            currentQuerry = it
+        }
     }
 
     override fun initViews() {
         super.initViews()
         val dividerItemDecoration = DividerItemDecoration(recyclerView.context, LinearLayoutManager.VERTICAL)
         recyclerView.addItemDecoration(dividerItemDecoration)
+        if (type == typeFavourites) {
+            emptyViewText.text = getString(R.string.empty_favourites)
+        } else if (type == typeSearch) {
+            emptyViewText.text = getString(R.string.empty_search)
+        }
     }
 
     override fun onStart() {
@@ -94,18 +104,22 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
     }
 
     override fun showContent(data: PageResponse<MutableList<Course>>) {
-        if (type == typeFavourites && !needToClearAdapter) {
+        if (data.meta.page > 1) {
+            adapter.clear()
             adapter.update(data)
-            showEmptyView(adapter.itemCount > 0)
         } else {
-            needToClearAdapter = false
             adapter.clear()
             adapter.update(data)
         }
+        showEmptyView(adapter.itemCount > 0)
+    }
+
+    override fun onLoadingMore(page: Int) {
+        presenter.searchCourses(currentQuerry, page)
     }
 
     override fun showError(e: Throwable) {
-        e.printStackTrace()
+        redSnackbar(R.string.something_went_wrong)
     }
 
     override fun onAddCourseToFavourites(course: Course) {
@@ -123,33 +137,24 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 89) {
-            needToClearAdapter = true
-            presenter.reloadFavourites()
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         if (type == typeFavourites) {
             inflater.inflate(R.menu.menu_favourites, menu)
         } else {
             inflater.inflate(R.menu.menu_search, menu)
-            val menuitem = menu.findItem(R.id.action_search)
-            val rxSearchView = MenuItemCompat.getActionView(menuitem) as RxSearchView
-            if (!TextUtils.isEmpty("")) {
-                menuitem.expandActionView()
-                rxSearchView.setQuery("", true)
+            val menuItem = menu.findItem(R.id.action_search)
+            val rxSearchView = MenuItemCompat.getActionView(menuItem) as RxSearchView
+            if (!TextUtils.isEmpty(currentQuerry)) {
+                menuItem.expandActionView()
+                rxSearchView.setQuery(currentQuerry, true)
                 rxSearchView.clearFocus()
             }
-
-            menuitem.expandActionView()
-            MenuItemCompat.setOnActionExpandListener(menuitem, OnActionExpandListenerImpl())
-
+            menuItem.expandActionView()
+            MenuItemCompat.setOnActionExpandListener(menuItem, OnActionExpandListenerImpl())
             rxSearchView.setOnRxQueryTextListener { newText ->
-                presenter.searchCourses(newText)
+                currentQuerry = newText
+                presenter.searchCourses(newText, 1)
             }
         }
     }
@@ -170,6 +175,16 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
                 adapter.notifyItemChanged(foundCourse)
             }
         }
+        if (adapter.itemCount == 0) {
+            emptyView.visibility = View.VISIBLE
+        } else {
+            emptyView.visibility = View.GONE
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(queryKey, currentQuerry)
     }
 
     private inner class OnActionExpandListenerImpl : MenuItemCompat.OnActionExpandListener {

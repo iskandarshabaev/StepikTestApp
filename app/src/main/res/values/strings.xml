@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">StepikTestApp</string>
     <string name="score">%.2f</string>
+
+    <string name="empty_favourites">Пока не добавлено ни одного курса. Воспользуйтесь поиском что бы найти новые курсы.</string>
+    <string name="empty_search">К сожалению по данному запросу найти ничего не удалось</string>
+    <string name="something_went_wrong">Что-пошло не так</string>
 </resources>

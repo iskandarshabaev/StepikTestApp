@@ -26,7 +26,12 @@ abstract class ListAdapter<T>(
         return data
     }
 
+    var hasNext = true
+    var page = 1
+
     fun update(data: PageResponse<MutableList<T>>) {
+        hasNext = data.meta.hasNext
+        page = data.meta.page
         val lastItem = this.data.size - 1
         this.data.addAll(data.data)
         if (lastItem > 0) {

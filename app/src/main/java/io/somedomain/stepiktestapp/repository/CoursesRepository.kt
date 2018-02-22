@@ -10,7 +10,7 @@ import io.somedomain.stepiktestapp.repository.db.LocalDB
 
 interface CoursesRepository {
 
-    fun search(query: String): Observable<PageResponse<MutableList<Course>>>
+    fun search(query: String, page: Int): Observable<PageResponse<MutableList<Course>>>
 
     fun addToFavourites(course: Course): Observable<Course>
 
@@ -25,8 +25,8 @@ class DefaultCoursesRepository(val stepikApi: StepikApiController) : CoursesRepo
 
     var courseChangeSubject = PublishSubject.create<Course>()
 
-    override fun search(query: String): Observable<PageResponse<MutableList<Course>>> {
-        return stepikApi.searchCourses(query).doOnNext {
+    override fun search(query: String, page: Int): Observable<PageResponse<MutableList<Course>>> {
+        return stepikApi.searchCourses(query, page).doOnNext {
             it.data = it.data.distinctBy { it.id }.toMutableList()
             it.data = it.data.filter {
                 !it.courseTitle.isNullOrEmpty() &&

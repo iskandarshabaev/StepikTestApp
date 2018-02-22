@@ -6,11 +6,14 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
+import android.support.annotation.StringRes
+import android.support.design.widget.Snackbar
 import android.support.graphics.drawable.VectorDrawableCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.View
+import io.somedomain.stepiktestapp.R
 import io.somedomain.stepiktestapp.StepikTestApp
 import io.somedomain.stepiktestapp.repository.RepositoryProvider
 
@@ -84,4 +87,14 @@ fun Fragment.tintedVector(@DrawableRes drawableId: Int, @ColorRes colorId: Int):
 
 fun View.tintedVector(@DrawableRes drawableId: Int, @ColorRes colorId: Int): Drawable {
     return context.tintedVector(drawableId, colorId)
+}
+
+fun Fragment.redSnackbar(@StringRes textRes: Int) = Snackbar.make(view!!, textRes, Snackbar.LENGTH_LONG).apply {
+    view.setBackgroundColor(colour(R.color.colorError))
+    show()
+}
+
+fun Fragment.redSnackbar(text: CharSequence) = Snackbar.make(view!!, text, Snackbar.LENGTH_LONG).apply {
+    view.setBackgroundColor(colour(R.color.colorError))
+    show()
 }

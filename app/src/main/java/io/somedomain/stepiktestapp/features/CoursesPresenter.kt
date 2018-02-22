@@ -41,12 +41,6 @@ class CoursesPresenter(
         }
     }
 
-    fun reloadFavourites() {
-        /*coursersRepository.loadFavourites()
-                .applySchedulers()
-                .deliverToSubject()*/
-    }
-
     fun loadFavourites() {
         coursersRepository.loadFavourites()
                 .mergeWithCache()
@@ -54,11 +48,18 @@ class CoursesPresenter(
                 .deliverToSubject()
     }
 
-    fun searchCourses(query: String) {
-        coursersRepository.search(query)
+    fun searchCourses(query: String, page: Int) {
+        coursersRepository.search(query, page)
                 .mergeWithFavourites()
+                .flatMap {
+                    if (page > 1) {
+                        Observable.just(it).mergeWithCache()
+                    } else {
+                        Observable.just(it)
+                    }
+                }
                 .applySchedulers()
-                .subscribe({ onData(it) }, { onError(it) })
+                .deliverToSubject()
     }
 
     open protected fun Observable<PageResponse<MutableList<Course>>>.mergeWithFavourites(): Observable<PageResponse<MutableList<Course>>> =
