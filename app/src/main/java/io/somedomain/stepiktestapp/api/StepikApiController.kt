@@ -9,7 +9,7 @@ import retrofit2.http.Query
 interface StepikApiController {
 
     @GET("search-results")
-    @Unwrap("search-results", ResponseType.ARRAY)
+    @Unwrap("search-results")
     fun searchCourses(@Query("query") query: String,
                       @Query("page") page: Int): Observable<PageResponse<MutableList<Course>>>
 
