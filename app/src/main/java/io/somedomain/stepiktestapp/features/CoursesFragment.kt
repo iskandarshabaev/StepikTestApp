@@ -97,13 +97,17 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
 
     override fun onStart() {
         super.onStart()
-        if (type == 1 && isFirstRun) {
+        if (type == typeFavourites && isFirstRun) {
             isFirstRun = false
+            showProgress(true)
             presenter.loadFavourites()
+        } else if (type == typeSearch) {
+            showProgress(false)
         }
     }
 
     override fun showContent(data: PageResponse<MutableList<Course>>) {
+        showProgress(false)
         if (data.meta.page > 1) {
             adapter.clear()
             adapter.update(data)
@@ -119,6 +123,7 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
     }
 
     override fun showError(e: Throwable) {
+        showProgress(false)
         redSnackbar(R.string.something_went_wrong)
     }
 
@@ -154,6 +159,9 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
             MenuItemCompat.setOnActionExpandListener(menuItem, OnActionExpandListenerImpl())
             rxSearchView.setOnRxQueryTextListener { newText ->
                 currentQuerry = newText
+                if (adapter.itemCount == 0) {
+                    showProgress(true)
+                }
                 presenter.searchCourses(newText, 1)
             }
         }

@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import io.somedomain.stepiktestapp.R
 import io.somedomain.stepiktestapp.common.EndlessRecyclerViewScrollListener
@@ -16,6 +17,7 @@ abstract class ListFragment<V : BaseListView<T>, out P : BasePresenter<V>, T> : 
     protected lateinit var adapter: ListAdapter<T>
     protected lateinit var emptyView: View
     protected lateinit var emptyViewText: TextView
+    protected lateinit var progressView: ProgressBar
 
     override fun createView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.list, container, false)
@@ -26,6 +28,7 @@ abstract class ListFragment<V : BaseListView<T>, out P : BasePresenter<V>, T> : 
         recyclerView = root.findViewById(R.id.list)
         emptyView = root.findViewById(R.id.empty_view)
         emptyViewText = root.findViewById(R.id.empty_text)
+        progressView = root.findViewById(R.id.progress)
     }
 
     override fun initViews() {
@@ -41,6 +44,14 @@ abstract class ListFragment<V : BaseListView<T>, out P : BasePresenter<V>, T> : 
                 }
             }
         })
+    }
+
+    protected fun showProgress(show: Boolean) {
+        if (show) {
+            progressView.visibility = View.VISIBLE
+        } else {
+            progressView.visibility = View.GONE
+        }
     }
 
     open protected fun onLoadingMore(page: Int) {
