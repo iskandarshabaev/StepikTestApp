@@ -4,7 +4,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import io.somedomain.stepiktestapp.common.applySchedulers
-import io.somedomain.stepiktestapp.model.PageResponse
+import io.somedomain.stepiktestapp.data.model.PageResponse
 
 open class CacheableListPresenter<T, V : BaseListView<T>> : BaseListPresenter<T, V>() {
 

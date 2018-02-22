@@ -15,7 +15,6 @@ import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.View
 import io.somedomain.stepiktestapp.R
 import io.somedomain.stepiktestapp.StepikTestApp
-import io.somedomain.stepiktestapp.repository.RepositoryProvider
 
 // from Moxy
 // https://github.com/Arello-Mobile/Moxy/blob/master/moxy-android/src/main/java/com/arellomobile/mvp/MvpFragment.java#L72
@@ -43,16 +42,6 @@ val Context.app: StepikTestApp
 val Fragment.app: StepikTestApp
     get() {
         return activity.applicationContext as StepikTestApp
-    }
-
-val Context.repositoryProvider: RepositoryProvider
-    get() {
-        return app.repositoryProvider
-    }
-
-val Fragment.repositoryProvider: RepositoryProvider
-    get() {
-        return app.repositoryProvider
     }
 
 fun Fragment.colour(@ColorRes id: Int) = ContextCompat.getColor(activity, id)

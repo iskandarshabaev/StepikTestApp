@@ -1,4 +1,4 @@
-package io.somedomain.stepiktestapp.repository.db;
+package io.somedomain.stepiktestapp.data.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,10 +7,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import io.somedomain.stepiktestapp.model.Course;
-import io.somedomain.stepiktestapp.model.CourseDao;
-import io.somedomain.stepiktestapp.model.DaoMaster;
-import io.somedomain.stepiktestapp.model.DaoSession;
+import io.somedomain.stepiktestapp.data.model.Course;
+import io.somedomain.stepiktestapp.data.model.CourseDao;
+import io.somedomain.stepiktestapp.data.model.DaoMaster;
+import io.somedomain.stepiktestapp.data.model.DaoSession;
 
 /**
  * Локлаьная база данных
@@ -67,6 +67,10 @@ public class LocalDB {
                 .where(CourseDao.Properties.Id.eq(courseId))
                 .buildDelete()
                 .executeDeleteWithoutDetachingEntities();
+    }
+
+    public void removeAllCourses() {
+        daoSession.getCourseDao().deleteAll();
     }
 
 }

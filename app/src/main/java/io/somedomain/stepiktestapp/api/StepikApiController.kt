@@ -1,8 +1,8 @@
 package io.somedomain.stepiktestapp.api
 
 import io.reactivex.Observable
-import io.somedomain.stepiktestapp.model.Course
-import io.somedomain.stepiktestapp.model.PageResponse
+import io.somedomain.stepiktestapp.data.model.Course
+import io.somedomain.stepiktestapp.data.model.PageResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

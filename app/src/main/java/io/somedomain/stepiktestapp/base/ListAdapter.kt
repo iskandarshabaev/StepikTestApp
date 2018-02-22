@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import io.somedomain.stepiktestapp.model.PageResponse
+import io.somedomain.stepiktestapp.data.model.PageResponse
 
 abstract class ListAdapter<T>(
         protected val data: MutableList<T>

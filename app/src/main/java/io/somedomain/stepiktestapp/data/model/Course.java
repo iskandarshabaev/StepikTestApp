@@ -1,4 +1,4 @@
-package io.somedomain.stepiktestapp.model;
+package io.somedomain.stepiktestapp.data.model;
 
 import com.google.gson.annotations.SerializedName;
 

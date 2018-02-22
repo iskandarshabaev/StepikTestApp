@@ -1,4 +1,4 @@
-package io.somedomain.stepiktestapp.repository.db;
+package io.somedomain.stepiktestapp.data.db;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.somedomain.stepiktestapp.model.DaoMaster;
+import io.somedomain.stepiktestapp.data.model.DaoMaster;
 
 
 public class DBOpenHelper extends DaoMaster.DevOpenHelper {

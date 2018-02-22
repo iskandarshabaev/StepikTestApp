@@ -7,7 +7,7 @@ import io.somedomain.stepiktestapp.R
 import io.somedomain.stepiktestapp.base.ViewHolder
 import io.somedomain.stepiktestapp.common.ImageHelper
 import io.somedomain.stepiktestapp.common.tintedVector
-import io.somedomain.stepiktestapp.model.Course
+import io.somedomain.stepiktestapp.data.model.Course
 
 class CourseViewHolder(
         private val view: View

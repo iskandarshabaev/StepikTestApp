@@ -1,4 +1,4 @@
-package io.somedomain.stepiktestapp.repository
+package io.somedomain.stepiktestapp.data
 
 import android.util.Log
 import io.somedomain.stepiktestapp.base.BasePresenter

@@ -1,4 +1,4 @@
-package io.somedomain.stepiktestapp.model
+package io.somedomain.stepiktestapp.data.model
 
 class PageResponse<T>(
         var meta: Meta,

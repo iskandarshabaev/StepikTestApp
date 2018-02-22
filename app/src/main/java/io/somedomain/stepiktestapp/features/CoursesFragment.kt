@@ -13,10 +13,10 @@ import io.somedomain.stepiktestapp.base.ListAdapter
 import io.somedomain.stepiktestapp.base.ListFragment
 import io.somedomain.stepiktestapp.base.ViewHolder
 import io.somedomain.stepiktestapp.common.redSnackbar
-import io.somedomain.stepiktestapp.common.repositoryProvider
+import io.somedomain.stepiktestapp.data.model.Course
+import io.somedomain.stepiktestapp.data.model.PageResponse
+import io.somedomain.stepiktestapp.di.Injection
 import io.somedomain.stepiktestapp.features.search.CoursesSearchActivity
-import io.somedomain.stepiktestapp.model.Course
-import io.somedomain.stepiktestapp.model.PageResponse
 import io.somedomain.stepiktestapp.widget.RxSearchView
 
 
@@ -62,7 +62,7 @@ class CoursesFragment : ListFragment<CoursesPresenter.View, CoursesPresenter, Co
     protected var currentQuerry = ""
 
     override fun onCreatePresenter(savedInstanceState: Bundle?): CoursesPresenter {
-        return CoursesPresenter(type, repositoryProvider.coursesRepository)
+        return CoursesPresenter(type, Injection.coursesRepository(context))
     }
 
     override fun onCreateListAdapter(): ListAdapter<Course> {
